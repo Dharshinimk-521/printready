@@ -53,11 +53,34 @@ async function generatePdf(imageBuffer, spec, originalName = "artwork") {
   // -- Draw the image 
   // The image fills the ENTIRE page including the bleed area.
   // x=0, y=0 means start from the bottom-left corner (PDF coordinate system starts at bottom-left, not top-left like CSS/HTML).
+  // Calculate how to fit the image onto the page WITHOUT distorting it.
+  // For "inside" mode images (like a non-square sticker design), this
+  // centers the image and adds equal padding on the shorter dimension,
+  // instead of stretching it to fill the page incorrectly.
+  const imageAspectRatio = embeddedImage.width / embeddedImage.height;
+  const pageAspectRatio  = pageWidthPt / pageHeightPt;
+
+  let drawWidth, drawHeight, drawX, drawY;
+
+  if (imageAspectRatio > pageAspectRatio) {
+    // Image is relatively wider than the page - fit to page width
+    drawWidth  = pageWidthPt;
+    drawHeight = pageWidthPt / imageAspectRatio;
+    drawX = 0;
+    drawY = (pageHeightPt - drawHeight) / 2; // center vertically
+  } else {
+    // Image is relatively taller than the page - fit to page height
+    drawHeight = pageHeightPt;
+    drawWidth  = pageHeightPt * imageAspectRatio;
+    drawY = 0;
+    drawX = (pageWidthPt - drawWidth) / 2; // center horizontally
+  }
+
   page.drawImage(embeddedImage, {
-    x:0,
-    y:0,
-    width:pageWidthPt,
-    height:pageHeightPt,
+    x:      drawX,
+    y:      drawY,
+    width:  drawWidth,
+    height: drawHeight,
   });
 
   // -- Draw crop marks 

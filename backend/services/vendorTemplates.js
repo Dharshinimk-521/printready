@@ -101,7 +101,7 @@ const VENDORS = {
         bleedMm:   1.5,
         widthMm:   101.6,
         heightMm:  101.6,
-        fitMode:   "inside",  // die-cut shape must be fully visible
+        fitMode:   "cover",  
         notes:     "600 DPI minimum. CMYK PDF with 1.5mm bleed on all sides.",
         tags:      ["600 DPI", "CMYK", "Die-Cut", "Sticker Mule"],
       },

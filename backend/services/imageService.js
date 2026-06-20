@@ -397,7 +397,24 @@ async function processImage(buffer, spec) {
     targetFormat: spec.format,
     fitMode:      spec.fitMode,
   });
+  // ── Warn about cropping in cover mode ────────────────────────
+  // "cover" mode WILL crop the source if its aspect ratio doesn't
+  // match the target exactly. 
+  if (spec.fitMode === "cover") {
+    const sourceMeta = await sharp(buffer).metadata();
+    const sourceRatio = sourceMeta.width / sourceMeta.height;
+    const targetRatio = spec.pxWidth / spec.pxHeight;
+    const ratioDiff = Math.abs(sourceRatio - targetRatio) / targetRatio;
 
+    if (ratioDiff > 0.1) {
+      logger.warn("Cover mode will crop a meaningful portion of this image", {
+        product: spec.label,
+        sourceRatio: sourceRatio.toFixed(2),
+        targetRatio: targetRatio.toFixed(2),
+        estimatedCropPercent: Math.round(ratioDiff * 100),
+      });
+    }
+  }
   // "cover" -> fills the box completely, crops overflow (T-shirts, mugs)
   // "inside" -> fits within the box, may leave padding (posters, die-cuts)
   const pipeline = sharp(buffer)
@@ -434,11 +451,13 @@ async function processImage(buffer, spec) {
   // This catches rare Sharp edge cases (corrupted output, wrong dimensions due to a bad fit calculation, etc.) 
   const outputMeta = await sharp(processedBuffer).metadata();
 
-  const widthMatches  = Math.abs(outputMeta.width  - spec.pxWidth)  <= 2; // allow 2px rounding
+if (spec.fitMode === "cover") {
+  // "cover" PROMISES to fill the exact target box completely - any deviation here genuinely IS a bug worth catching.
+  const widthMatches  = Math.abs(outputMeta.width  - spec.pxWidth)  <= 2;
   const heightMatches = Math.abs(outputMeta.height - spec.pxHeight) <= 2;
 
   if (!widthMatches || !heightMatches) {
-    logger.error("Final validation failed - output dimensions don't match spec", {
+    logger.error("Final validation failed - cover mode output dimensions don't match spec", {
       expected: `${spec.pxWidth}x${spec.pxHeight}`,
       actual:   `${outputMeta.width}x${outputMeta.height}`,
     });
@@ -447,6 +466,26 @@ async function processImage(buffer, spec) {
       `got ${outputMeta.width}x${outputMeta.height}`
     );
   }
+
+} else {
+  // "inside" mode only GUARANTEES the output fits WITHIN the box -
+  // one dimension may legitimately be smaller if the source image's
+  // aspect ratio doesn't match the target exactly. We only check
+  // that neither dimension EXCEEDS the target (that would be a real bug).
+  const widthWithinBounds  = outputMeta.width  <= spec.pxWidth  + 2;
+  const heightWithinBounds = outputMeta.height <= spec.pxHeight + 2;
+
+  if (!widthWithinBounds || !heightWithinBounds) {
+    logger.error("Final validation failed - inside mode output exceeds target box", {
+      target: `${spec.pxWidth}x${spec.pxHeight}`,
+      actual: `${outputMeta.width}x${outputMeta.height}`,
+    });
+    throw new Error(
+      `Processing validation failed: output ${outputMeta.width}x${outputMeta.height} ` +
+      `exceeds target box ${spec.pxWidth}x${spec.pxHeight}`
+    );
+  }
+}
 
   logger.info("Sharp processing complete and validated", {
     outputSizeKb: Math.round(processedBuffer.length / 1024),

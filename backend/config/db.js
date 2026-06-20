@@ -10,7 +10,7 @@ const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
 
   // Neon (cloud Postgres) requires SSL. Local Postgres doesn't.
-  ssl: process.env.NODE_ENV === "production"
+  ssl: process.env.DATABASE_URL?.includes("neon.tech")
     ? { rejectUnauthorized: false }
     : false,
 
