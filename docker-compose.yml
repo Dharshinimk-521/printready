@@ -1,0 +1,57 @@
+# docker-compose.yml
+#
+# Runs the full V1 stack locally with one command:
+#   docker-compose up --build
+#
+# Three services: db (local Postgres for testing), backend, frontend
+
+
+
+services:
+
+  db:
+    image: postgres:16-alpine
+    container_name: printready-db
+    environment:
+      POSTGRES_DB: printready
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+    container_name: printready-backend
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./backend/.env
+    environment:
+      # Override to point at the db CONTAINER, not localhost
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/printready
+      NODE_ENV: production
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: http://localhost:5000
+    container_name: printready-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:

@@ -1,0 +1,117 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;1,9..144,300&family=DM+Sans:wght@300;400;500;600&display=swap');
+@import "tailwindcss";
+
+:root {
+  --cream:      #FAF7F2;
+  --cream-mid:  #F0EBE1;
+  --cream-dark: #E0D8CC;
+  --navy:       #1B2D4F;
+  --navy-mid:   #2C4470;
+  --navy-lt:    #4A6FA5;
+  --gold:       #C9973A;
+  --gold-lt:    #F0D9A8;
+  --press:      #E8421A;
+  --press2:     #FF6B3D;
+  --ink:        #1A1A1A;
+  --muted:      #6B6560;
+  --card:       #FFFFFF;
+  --border:     #D4CCBF;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--cream);
+  color: var(--ink);
+  min-height: 100vh;
+}
+
+.font-display { font-family: 'Fraunces', serif; font-optical-sizing: auto; }
+.font-stamp   { font-family: 'DM Sans', sans-serif; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+
+.stamp-border       { border: 3px solid var(--ink);   box-shadow: 4px 4px 0 var(--ink); }
+.stamp-border-press { border: 3px solid var(--press); box-shadow: 4px 4px 0 var(--press); }
+
+.soft-card {
+  background: var(--card);
+  border: 1.5px solid var(--cream-dark);
+  box-shadow: 0 2px 12px rgba(27,45,79,0.07);
+}
+
+.btn-navy {
+  background: var(--navy); color: var(--cream);
+  font-family: 'DM Sans', sans-serif; font-weight: 600;
+  font-size: 0.9rem; letter-spacing: 0.04em;
+  border: none; padding: 0.7rem 1.6rem; cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+.btn-navy:hover  { background: var(--navy-mid); transform: translateY(-1px); }
+.btn-navy:active { transform: translateY(0); }
+
+.btn-gold {
+  background: var(--gold); color: white;
+  font-family: 'DM Sans', sans-serif; font-weight: 600;
+  font-size: 0.9rem; border: none;
+  padding: 0.7rem 1.6rem; cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-gold:hover { background: #B5872E; }
+
+.btn-press {
+  background: var(--press); color: white;
+  font-family: 'DM Sans', sans-serif; font-weight: 700;
+  font-size: 0.88rem; letter-spacing: 0.06em; text-transform: uppercase;
+  border: 3px solid var(--ink); box-shadow: 4px 4px 0 var(--ink);
+  padding: 0.65rem 1.5rem; cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+.btn-press:hover  { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 var(--ink); }
+.btn-press:active { transform: translate(2px,2px);   box-shadow: 2px 2px 0 var(--ink); }
+.btn-press:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: 4px 4px 0 var(--ink); }
+
+.btn-ghost {
+  background: transparent; color: var(--ink);
+  font-family: 'DM Sans', sans-serif; font-weight: 700;
+  font-size: 0.88rem; letter-spacing: 0.06em; text-transform: uppercase;
+  border: 3px solid var(--ink); box-shadow: 4px 4px 0 var(--ink);
+  padding: 0.65rem 1.5rem; cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.1s, background 0.15s;
+}
+.btn-ghost:hover { background: var(--ink); color: var(--cream); transform: translate(-2px,-2px); }
+
+.chip       { display:inline-flex; align-items:center; gap:4px; padding:2px 10px; border:2px solid var(--ink); font-size:0.7rem; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; background:var(--gold-lt); color:var(--ink); }
+.chip-red   { background:var(--press);  color:white; }
+.chip-green { background:#BBF7D0;       color:#14532D; }
+.chip-gray  { background:var(--border); color:var(--ink); }
+.chip-navy  { background:var(--navy);   color:var(--cream); border-color:var(--navy); }
+
+.drop-active {
+  border-color: var(--press) !important;
+  background: #E8421A08 !important;
+  box-shadow: 6px 6px 0 var(--press) !important;
+}
+
+.halftone {
+  background-image: radial-gradient(circle, #0A0A0A15 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+@keyframes slideUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+@keyframes fadeIn  { from { opacity:0; }                             to { opacity:1; } }
+@keyframes spin    { to { transform: rotate(360deg); } }
+.anim-up   { animation: slideUp 0.4s ease both; }
+.anim-fade { animation: fadeIn  0.35s ease both; }
+.spin      { animation: spin 1s linear infinite; }
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--cream); }
+::-webkit-scrollbar-thumb { background: var(--border); }
+
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 100;
+  background: rgba(27,45,79,0.45);
+  backdrop-filter: blur(3px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 1rem;
+}

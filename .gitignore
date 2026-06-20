@@ -1,0 +1,12 @@
+.env
+.env.local
+.history/
+node_modules/
+backend/uploads/
+backend/logs/
+frontend/dist/
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+build/
