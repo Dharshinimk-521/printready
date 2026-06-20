@@ -10,7 +10,7 @@ export default function Navbar({ user, isLoggedIn, onLoginClick, onLogout }) {
   const links = [
     { to: "/upload",  label: "Upload" },
     { to: "/history", label: "History" },
-    ...(user?.role === "printer" ? [{to: "/printer-dashboard", label: "Dahsboard"}]:[]),
+    ...(user?.role === "printer" ? [{to: "/printer-dashboard", label: "Dashboard"}]:[]),
   ];
 
   return (
