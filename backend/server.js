@@ -8,6 +8,7 @@ const cors         = require("cors");//cross origin resource sharing
 const helmet       = require("helmet");
 const morgan       = require("morgan");
 const path         = require("path");
+const rateLimit = require("express-rate-limit");
 
 const { createTables } = require("./config/db");
 const { errorHandler } = require("./middleware/errorHandler");
@@ -49,6 +50,29 @@ app.use(morgan("dev", {
   },
 }));
 
+// ── General rate limit 
+// Applies to EVERY request. Generous enough for normal use,
+// strict enough to stop scripted abuse
+const generalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,   // 15 minutes
+  max: 100,                    // 100 requests per IP per window
+  message: { message: "Too many requests. Please try again later." },
+  standardHeaders: true,       // adds RateLimit-* headers to responses
+  legacyHeaders: false,
+});
+app.use(generalLimiter);
+
+// ── Strict auth rate limit 
+// Specifically for login/register - prevents brute-force password
+// guessing. 5 attempts per 15 minutes is generous for a real user.
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: { message: "Too many login attempts. Please try again in 15 minutes." },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 // ─ Body parsers ─
 // These let Express read request bodies
 // express.json()       → reads JSON bodies { "email": "..." }
@@ -72,7 +96,7 @@ app.use(
 // job routes   → /api/jobs/upload, /api/jobs/history etc.
 
 app.use("/api/jobs", jobRoutes);
-app.use("/api/auth", authRoutes);
+app.use("/api/auth", authLimiter,authRoutes);
 app.use("/api/printer",printerRoutes)
 
 // ── Health check ──

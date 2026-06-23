@@ -271,7 +271,7 @@ const getAllJobsForPrinter = asyncHandler(async (req, res) => {
   res.json({ jobs: rows });
 });
 
-// ── PATCH /api/printer/jobs/:id/status 
+// ──  /api/printer/jobs/:id/status 
 // Lets a printer mark a job as completed or rejected.
 // If rejected, a reason is required - this gets shown to the customer later when they check their job/history.
 const updateJobStatus = asyncHandler(async (req, res) => {
