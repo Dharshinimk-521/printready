@@ -14,6 +14,15 @@ const {
 
 const { upload, multerErrorHandler } = require("../middleware/upload");
 const { optionalAuth, protect } = require("../middleware/auth");
+const rateLimit = require("express-rate-limit");
+
+const uploadLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  message: { message: "Upload limit reached. Please try again in 15 minutes." },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 // ── GET /api/jobs/vendors 
 // Called when the frontend loads the upload page — populates the first dropdown (vendor selection)
 router.get("/vendors", getVendors);
@@ -29,6 +38,7 @@ router.get("/vendors/:vendorId/products", getVendorProducts);
 //   3. uploadAndProcess        -> the actual pipeline (only runs if file is valid)
 router.post(
   "/upload",
+  uploadLimiter,
   optionalAuth,
   upload.single("image"),
   multerErrorHandler,

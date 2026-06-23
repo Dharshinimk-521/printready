@@ -72,7 +72,16 @@ const authLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
 });
-
+// ── Upload-specific rate limit 
+// Uploads are  most EXPENSIVE operation (Sharp processing +
+// 3 Azure uploads + PDF generation per reques)
+const uploadLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,   // 15 minutes
+  max: 20,                     // 20 uploads per IP per window
+  message: { message: "Upload limit reached. Please try again in 15 minutes." },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 // ─ Body parsers ─
 // These let Express read request bodies
 // express.json()       → reads JSON bodies { "email": "..." }
