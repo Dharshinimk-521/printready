@@ -14,7 +14,7 @@ import { useAuth }       from "../hooks/useAuth.js";
 import { useUpload }     from "../hooks/useUpload.js";
 
 
-export default function UploadPage() {
+export default function UploadPage({onLoginClick}) {
   const [file,      setFile]      = useState(null);
   const [selection, setSelection] = useState(null); // { vendorId, productId, spec }
 
