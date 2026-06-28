@@ -43,7 +43,7 @@ export default function App() {
 
       <Routes>
         <Route path="/"        element={<LandingPage />} />
-        <Route path="/upload"  element={<UploadPage />} />
+        <Route path="/upload" element={<UploadPage onLoginClick={() => setShowAuthModal(true)} />} />
         <Route
           path="/history"
           element={<HistoryPage onLoginClick={() => setShowAuthModal(true)} />}

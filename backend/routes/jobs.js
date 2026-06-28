@@ -39,7 +39,7 @@ router.get("/vendors/:vendorId/products", getVendorProducts);
 router.post(
   "/upload",
   uploadLimiter,
-  optionalAuth,
+  protect,
   upload.single("image"),
   multerErrorHandler,
   uploadAndProcess

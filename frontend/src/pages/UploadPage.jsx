@@ -13,6 +13,7 @@ import ResultCard        from "../components/ResultCard.jsx";
 import { useAuth }       from "../hooks/useAuth.js";
 import { useUpload }     from "../hooks/useUpload.js";
 
+
 export default function UploadPage() {
   const [file,      setFile]      = useState(null);
   const [selection, setSelection] = useState(null); // { vendorId, productId, spec }
@@ -35,6 +36,23 @@ export default function UploadPage() {
     reset();
   }
 
+  if (!isLoggedIn) {
+    return (
+      <main style={{ maxWidth: 480, margin: "0 auto", padding: "56px 24px", textAlign: "center" }}>
+        <div className="soft-card" style={{ padding: 40 }}>
+          <p className="font-display" style={{ fontSize: "1.6rem", color: "var(--navy)", fontWeight: 300, marginBottom: 8 }}>
+            Log in to upload artwork
+          </p>
+          <p style={{ color: "var(--muted)", fontSize: "0.85rem", marginBottom: 24 }}>
+            Creating a free account takes a few seconds and keeps your job history saved.
+          </p>
+          <button onClick={onLoginClick} className="btn-navy">
+            Log in or sign up
+          </button>
+        </div>
+      </main>
+    );
+  }
   // ── Processing state 
   // Covers both "uploading" (file transmitting) and "processing"
   // (backend running Sharp/scoring/PDF - this is the slow part,
